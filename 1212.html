@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>維修回報系統 (雙品牌版)</title>
+    <style>
+        /* ==================== 全局樣式 ==================== */
+        body {
+            background-color: #f0f2f5;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 80px; /* 預留底部按鈕空間 */
+            color: #333;
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        /* 標題卡片 */
+        .header-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
+            border-top: 6px solid #666; /* 預設灰色，會隨品牌變色 */
+            transition: border-color 0.3s;
+        }
+
+        .header-card h1 { margin: 0 0 10px 0; font-size: 24px; }
+        .desc { font-size: 14px; color: #666; line-height: 1.5; }
+
+        /* 品牌選擇器 */
+        .brand-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .brand-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            background: #fff;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #888;
+        }
+
+        /* 惟品選中樣式 */
+        .brand-btn.active-wp {
+            border-color: #007377;
+            background-color: #e6f4f1;
+            color: #007377;
+        }
+
+        /* 千山選中樣式 */
+        .brand-btn.active-cs {
+            border-color: #d93025;
+            background-color: #fce8e6;
+            color: #d93025;
+        }
+
+        /* 隱藏區塊 */
+        .hidden-section { display: none; }
+
+        /* 問題卡片 */
+        .card {
+            background: #fff;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .required { color: #e53935; font-size: 12px; margin-left: 4px; }
+
+        /* 輸入框通用 */
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px; /* 防止 iOS 縮放 */
+            font-family: inherit;
+            margin-top: 5px;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #333;
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+        }
+
+        /* 選項 (Radio) */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .radio-label input { width: auto; margin: 0 10px 0 0; }
+
+        /* 底部固定按鈕區 */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: #fff;
+            padding: 12px 16px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .btn {
+            flex: 1;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-line { background: #06C755; color: white; }
+        .btn-excel { background: #217346; color: white; }
+        .btn:active { opacity: 0.8; transform: scale(0.98); }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div class="header-card" id="mainHeader">
+        <h1>維修回報系統</h1>
+        <div class="desc">請點擊下方按鈕選擇機器品牌，填寫後可直接複製到 LINE 或匯出 Excel。</div>
+    </div>
+
+    <div class="brand-selector">
+        <div class="brand-btn" id="btn-wp" onclick="switchBrand('weipin')">
+            惟品 (WS2)
+        </div>
+        <div class="brand-btn" id="btn-cs" onclick="switchBrand('chanson')">
+            千山淨水
+        </div>
+    </div>
+
+    <form id="mainForm">
+
+        <div id="section-weipin" class="hidden-section" data-brand="惟品WS2">
+            
+            <div class="card"><div class="card-title">1. 執行時間<span class="required">*</span></div><input type="date" class="wp-input" value="" id="wp_today"></div>
+            
+            <div class="card">
+                <div class="card-title">2. 服務項目<span class="required">*</span></div>
+                <div class="radio-group">
+                    <label class="radio-label"><input type="radio" name="wp_service" value="裝機" class="wp-input"> 裝機</label>
+                    <label class="radio-label"><input type="radio" name="wp_service" value="合約" class="wp-input"> 合約</label>
+                    <label class="radio-label"><input type="radio" name="wp_service" value="售服" class="wp-input"> 售服</label>
+                    <label class="radio-label"><input type="radio" name="wp_service" value="維修" class="wp-input"> 維修</label>
+                </div>
+            </div>
+
+            <div class="card"><div class="card-title">3. 客戶代號<span class="required">*</span></div><input type="text" class="wp-input" placeholder="輸入代號"></div>
+            <div class="card"><div class="card-title">4. 韌體版本</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">5. 面板版本</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">6. 龍頭版本</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">7. 原水TDS</div><input type="number" class="wp-input" inputmode="numeric"></div>
+            <div class="card"><div class="card-title">8. 原水水壓</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">9. 環境溫度</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">10. 100°C水溫度測試</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">11. 35°C水溫度測試</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">12. 10°C水溫度測試</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">13. 100°C水量測試</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">14. 35°C水量測試</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">15. 10°C水量測試</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">16. 場地電壓</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">17. 功率調整</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">18. 最大功率</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">19. 面板喚醒</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">20. 面板休眠</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">21. 面板充電</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">22. 原水水量</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">23. 原水溫(0)</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">24. 原水溫(1)</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">25. 原水溫(2)</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">26. 原水溫(3)</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">27. 廢水水量</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">28. 原理說明</div><textarea class="wp-input" rows="3"></textarea></div>
+            <div class="card"><div class="card-title">29. 技師口感<span class="required">*</span></div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">30. 客戶口感<span class="required">*</span></div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">31. 校正方式</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">32. 電池款式</div><input type="text" class="wp-input"></div>
+            <div class="card"><div class="card-title">33. App 綁定</div><input type="text" class="wp-input"></div>
+
+            <div class="card">
+                <div class="card-title">34. 檢修結果<span class="required">*</span></div>
+                <div class="radio-group">
+                    <label class="radio-label"><input type="radio" name="wp_result" value="完修" class="wp-input"> 完修</label>
+                    <label class="radio-label"><input type="radio" name="wp_result" value="店修" class="wp-input"> 店修</label>
+                    <label class="radio-label"><input type="radio" name="wp_result" value="廠修" class="wp-input"> 廠修</label>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-chanson" class="hidden-section" data-brand="千山淨水">
+            
+            <div class="card"><div class="card-title">單號</div><input type="text" class="cs-input" placeholder="若無可不填"></div>
+            <div class="card"><div class="card-title">客代<span class="required">*</span></div><input type="text" class="cs-input"></div>
+            <div class="card"><div class="card-title">姓名</div><input type="text" class="cs-input"></div>
+            <div class="card"><div class="card-title">機型</div><input type="text" class="cs-input"></div>
+            <div class="card"><div class="card-title">機器序號</div><input type="text" class="cs-input"></div>
+
+            <div class="card">
+                <div class="card-title">服務性質<span class="required">*</span></div>
+                <div class="radio-group">
+                    <label class="radio-label"><input type="radio" name="cs_service" value="保(內)維修" class="cs-input"> 保(內)維修</label>
+                    <label class="radio-label"><input type="radio" name="cs_service" value="保(外)維修" class="cs-input"> 保(外)維修</label>
+                    <label class="radio-label"><input type="radio" name="cs_service" value="定期保養" class="cs-input"> 定期保養</label>
+                </div>
+            </div>
+
+            <div class="card"><div class="card-title">報修原因</div><textarea class="cs-input" rows="2"></textarea></div>
+            <div class="card"><div class="card-title">實際原因</div><textarea class="cs-input" rows="2"></textarea></div>
+            <div class="card"><div class="card-title">處理方式</div><textarea class="cs-input" rows="2"></textarea></div>
+
+            <div class="card">
+                <div class="card-title">檢測結果<span class="required">*</span></div>
+                <div class="radio-group">
+                    <label class="radio-label"><input type="radio" name="cs_status" value="更換後正常" class="cs-input"> 更換後正常</label>
+                    <label class="radio-label"><input type="radio" name="cs_status" value="店修" class="cs-input"> 店修</label>
+                    <label class="radio-label"><input type="radio" name="cs_status" value="待料" class="cs-input"> 待料</label>
+                </div>
+            </div>
+
+            <div class="card"><div class="card-title">備註</div><textarea class="cs-input" rows="2"></textarea></div>
+        </div>
+
+    </form>
+</div>
+
+<div class="bottom-bar">
+    <button type="button" class="btn btn-line" onclick="copyToLine()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12C22 6.5 17.5 2 12 2S2 6.5 2 12c0 2.4.8 4.6 2.2 6.4-.3 1.9-1.2 3.6-1.3 3.8-.1.3.1.7.5.7h.1c.3 0 2.6-.4 4.8-2 1.1.6 2.4 1.1 3.7 1.1 5.5 0 10-4.5 10-10zm-12 5h-2v-2h2v2zm0-4h-2V7h2v6zm4 4h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        複製到 LINE
+    </button>
+    <button type="button" class="btn btn-excel" onclick="exportExcel()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        輸出 Excel
+    </button>
+</div>
+
+<script>
+    // 自動填入今天日期
+    document.getElementById('wp_today').valueAsDate = new Date();
+
+    // 狀態變數
+    let currentBrand = null;
+
+    // 切換品牌邏輯
+    function switchBrand(brand) {
+        const wpSection = document.getElementById('section-weipin');
+        const csSection = document.getElementById('section-chanson');
+        const header = document.getElementById('mainHeader');
+        
+        // 按鈕樣式切換
+        document.getElementById('btn-wp').classList.remove('active-wp');
+        document.getElementById('btn-cs').classList.remove('active-cs');
+
+        if (brand === 'weipin') {
+            currentBrand = 'weipin';
+            document.getElementById('btn-wp').classList.add('active-wp');
+            wpSection.style.display = 'block';
+            csSection.style.display = 'none';
+            header.style.borderTopColor = '#007377';
+            header.querySelector('h1').innerText = "惟品 WS2 維修回報";
+        } else {
+            currentBrand = 'chanson';
+            document.getElementById('btn-cs').classList.add('active-cs');
+            wpSection.style.display = 'none';
+            csSection.style.display = 'block';
+            header.style.borderTopColor = '#d93025';
+            header.querySelector('h1').innerText = "千山淨水 維修回報";
+        }
+    }
+
+    // 預設開啟惟品
+    switchBrand('weipin');
+
+    // 蒐集資料函數
+    function getActiveData() {
+        if (!currentBrand) return null;
+
+        const sectionId = currentBrand === 'weipin' ? 'section-weipin' : 'section-chanson';
+        const section = document.getElementById(sectionId);
+        const brandName = section.getAttribute('data-brand');
+        
+        // 抓取所有卡片
+        const cards = section.querySelectorAll('.card');
+        let data = [];
+        let summary = { brand: brandName, date: '', service: '', result: '' };
+
+        cards.forEach((card, index) => {
+            let title = card.querySelector('.card-title').innerText.replace('*','').trim();
+            // 移除前面的數字編號 (例如 "1. ")
+            title = title.replace(/^\d+[\.\-]\s*/, '');
+
+            let value = '';
+            const input = card.querySelector('input:checked') || card.querySelector('input:not([type=radio])') || card.querySelector('textarea');
+            
+            if (input) value = input.value.trim();
+
+            // 紀錄關鍵資訊
+            if (title.includes('執行時間')) summary.date = value;
+            if (title.includes('服務項目') || title.includes('服務性質')) summary.service = value;
+            if (title.includes('檢修結果') || title.includes('檢測結果')) summary.result = value;
+
+            data.push({ label: title, value: value });
+        });
+
+        return { summary, list: data };
+    }
+
+    // 功能：複製到 LINE
+    function copyToLine() {
+        const data = getActiveData();
+        if (!data) return;
+
+        // 全形數字陣列
+        const fullNums = ["０","１","２","３","４","５","６","７","８","９","１０","１１","１２","１３","１４","１５","１６","１７","１８","１９","２０","２１","２２","２３","２４","２５","２６","２７","２８","２９","３０","３１","３２","３３","３４"];
+
+        let text = `【${data.summary.brand} 維修回報】\n`;
+        if(data.summary.service) text += `${data.summary.service}`;
+        if(data.summary.result) text += ` - ${data.summary.result}`;
+        text += `\n------------------\n`;
+
+        data.list.forEach((item, idx) => {
+            const num = idx + 1;
+            // 如果是前34題內，嘗試用全形數字美化，否則用普通數字
+            const prefix = (num < fullNums.length) ? fullNums[num] : num;
+            
+            // 如果欄位是空的，視情況顯示 (這裡設定全部顯示，方便補填)
+            text += `${prefix}．${item.label}：${item.value}\n`;
+        });
+
+        navigator.clipboard.writeText(text).then(() => {
+            alert('已複製！請貼上至 LINE');
+        }).catch(err => {
+            console.error(err);
+            alert('複製失敗，請手動選取複製');
+        });
+    }
+
+    // 功能：匯出 Excel
+    function exportExcel() {
+        const data = getActiveData();
+        if (!data) return;
+
+        // 加入 BOM 解決中文亂碼
+        let csv = "\uFEFF";
+        csv += "品牌,題目,回答\n";
+
+        data.list.forEach(item => {
+            // 處理 CSV 格式：逗號換成全形，移除換行符
+            let safeVal = item.value.replace(/,/g, "，").replace(/\n/g, " ");
+            csv += `${data.summary.brand},${item.label},${safeVal}\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        const dateStr = new Date().toISOString().slice(0,10);
+        link.download = `${data.summary.brand}_維修單_${dateStr}.csv`;
+        link.click();
+    }
+</script>
+
+</body>
+</html>
