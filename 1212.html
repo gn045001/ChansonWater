@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>技師維修回報系統 - GitHub 自動存檔版</title>
+    <title>技師維修回報系統 - 修正版</title>
     <style>
-        /* ==================== 樣式設定 ==================== */
         body { background-color: #efeff4; font-family: -apple-system, sans-serif; margin: 0; padding: 20px 0 100px 0; display: flex; justify-content: center; }
         .form-container { width: 100%; max-width: 600px; margin: 0 12px; }
         .header-card { background: linear-gradient(135deg, #007377 0%, #005a5e 100%); color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
@@ -14,13 +13,10 @@
         .question-title { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
         .required { color: #ff3b30; }
         .hidden-section { display: none; }
-        input[type="text"], input[type="date"], textarea, select { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        input[type="text"], input[type="date"], textarea { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
         .option-group { display: flex; flex-direction: column; gap: 10px; }
         .option-label { display: flex; align-items: center; padding: 8px 0; cursor: pointer; }
         .option-label input { width: 20px; height: 20px; margin-right: 12px; accent-color: #007377; }
-        .brand-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; margin-bottom: 15px; }
-        .bg-weipin { background-color: #e0f2f1; color: #00695c; }
-        .bg-chanson { background-color: #ffebee; color: #c62828; }
         .floating-actions { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 12px; display: flex; gap: 8px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
         .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; color: white; cursor: pointer; }
         .btn-line { background-color: #06C755; }
@@ -40,26 +36,19 @@
         <div class="question-card">
             <div class="question-title">請選擇機器品牌 <span class="required">*</span></div>
             <div class="option-group">
-                <label class="option-label"><input type="radio" name="brand_select" value="惟品" onclick="switchBrand('weipin')" required> 惟品 (WS2 系列)</label>
-                <label class="option-label"><input type="radio" name="brand_select" value="千山" onclick="switchBrand('chanson')"> 千山 (淨水系列)</label>
+                <label class="option-label"><input type="radio" name="brand_select" value="惟品" onclick="switchBrand('weipin')" required> 惟品</label>
+                <label class="option-label"><input type="radio" name="brand_select" value="千山" onclick="switchBrand('chanson')"> 千山</label>
             </div>
         </div>
 
         <div id="section-weipin" class="hidden-section" data-brand="惟品">
-            <div style="text-align: center;"><span class="brand-badge bg-weipin">目前填寫：惟品表單</span></div>
-            <div class="question-card"><div class="question-title">1. 詳細型號 <span class="required">*</span></div><input type="text" data-label="機器形式" name="wp_1"></div>
-            <div class="question-card"><div class="question-title">2. 執行時間 <span class="required">*</span></div><input type="date" data-label="執行時間" name="wp_2"></div>
-            <div class="question-card"><div class="question-title">4. 客戶代號 <span class="required">*</span></div><input type="text" data-label="客戶代號" name="wp_4"></div>
-            <div class="question-card"><div class="question-title">34. 檢修結果 <span class="required">*</span></div><input type="text" data-label="檢修結果" name="wp_34"></div>
+            <div class="question-card"><div class="question-title">客戶代號 <span class="required">*</span></div><input type="text" data-label="客戶代號" name="wp_4"></div>
+            <div class="question-card"><div class="question-title">維修內容</div><textarea data-label="內容" name="wp_content"></textarea></div>
         </div>
 
         <div id="section-chanson" class="hidden-section" data-brand="千山">
-            <div style="text-align: center;"><span class="brand-badge bg-chanson">目前填寫：千山表單</span></div>
-            <div class="question-card"><div class="question-title">1. 單號</div><input type="text" data-label="單號" name="cs_1"></div>
-            <div class="question-card"><div class="question-title">2. 客代 <span class="required">*</span></div><input type="text" data-label="客代" name="cs_2"></div>
-            <div class="question-card"><div class="question-title">3. 姓名 <span class="required">*</span></div><input type="text" data-label="姓名" name="cs_3"></div>
-            <div class="question-card"><div class="question-title">6. 報修原因</div><textarea data-label="報修原因" name="cs_6"></textarea></div>
-            <div class="question-card"><div class="question-title">8. 處理方式</div><textarea data-label="處理方式" name="cs_8"></textarea></div>
+            <div class="question-card"><div class="question-title">客代 <span class="required">*</span></div><input type="text" data-label="客代" name="cs_2"></div>
+            <div class="question-card"><div class="question-title">報修原因</div><textarea data-label="報修原因" name="cs_6"></textarea></div>
         </div>
     </form>
 </div>
@@ -70,11 +59,10 @@
 </div>
 
 <script>
-    // GitHub 設定區
     const GITHUB_CONFIG = {
         token: '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',
-        username: 'gn045001', // 請確認您的 GitHub 帳號
-        repo: 'ChansonWater',   // 請確認您的儲存庫名稱
+        username: 'gn045001',
+        repo: 'ChansonWater',
         folder: 'data'
     };
 
@@ -108,16 +96,28 @@
         const path = `${GITHUB_CONFIG.folder}/${fileName}`;
         const contentBase64 = btoa(unescape(encodeURIComponent(data.content)));
 
+        // 修正網址：從 api.api.github.com 改為 api.github.com
+        const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.username}/${GITHUB_CONFIG.repo}/contents/${path}`;
+
         try {
-            const resp = await fetch(`https://api.api.github.com/repos/${GITHUB_CONFIG.username}/${GITHUB_CONFIG.repo}/contents/${path}`, {
+            const resp = await fetch(apiUrl, {
                 method: 'PUT',
-                headers: { 'Authorization': `token ${GITHUB_CONFIG.config.token}`, 'Content-Type': 'application/json' },
+                headers: { 
+                    'Authorization': `token ${GITHUB_CONFIG.token}`, 
+                    'Content-Type': 'application/json' 
+                },
                 body: JSON.stringify({ message: `維修單: ${fileName}`, content: contentBase64 })
             });
             if (resp.ok) alert("✅ 上傳成功！檔案已存至 data 資料夾");
-            else alert("❌ 上傳失敗，請檢查倉庫設定");
-        } catch (e) { alert("❌ 網路錯誤"); }
-        btn.disabled = false; btn.innerText = "上傳 GitHub";
+            else {
+                const err = await resp.json();
+                alert("❌ 上傳失敗：" + err.message);
+            }
+        } catch (e) { 
+            alert("❌ 網路錯誤，請檢查連線或金鑰權限"); 
+        } finally {
+            btn.disabled = false; btn.innerText = "上傳 GitHub";
+        }
     }
 
     function copyForLine() {
