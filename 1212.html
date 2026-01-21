@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>技師維修回報系統 - 雲端版</title>
+    <title>WS2 技師維修回報系統 - 最終版</title>
     <style>
-        body { background-color: #efeff4; font-family: -apple-system, "Microsoft JhengHei", sans-serif; margin: 0; padding: 20px 0 100px 0; display: flex; justify-content: center; }
+        body { background-color: #efeff4; font-family: -apple-system, "Microsoft JhengHei", sans-serif; margin: 0; padding: 20px 0 100px 0; display: flex; justify-content: center; color: #333; }
         .form-container { width: 100%; max-width: 640px; margin: 0 12px; }
-        .header-card { background: linear-gradient(135deg, #007377 0%, #005a5e 100%); color: white; padding: 24px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-top: 10px solid #004d40; }
+        .header-card { background: linear-gradient(135deg, #007377 0%, #005a5e 100%); color: white; padding: 24px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .question-card { background-color: #fff; padding: 20px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid transparent; }
         .question-card:focus-within { border-left-color: #007377; }
         .question-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: #242424; }
         .required { color: #d93025; margin-left: 4px; }
         .hidden-section { display: none; }
-        input[type="text"], input[type="date"], textarea, select { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #dadce0; border-radius: 4px; box-sizing: border-box; background-color: #fff; }
+        input[type="text"], input[type="date"], textarea, select { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #dadce0; border-radius: 6px; box-sizing: border-box; background-color: #fafafa; }
+        input:focus, textarea:focus { border-color: #007377; background-color: #fff; outline: none; }
         .option-group { display: flex; flex-direction: column; gap: 12px; }
         .option-label { display: flex; align-items: center; cursor: pointer; padding: 5px 0; }
-        .option-label input { width: 20px; height: 20px; margin-right: 12px; accent-color: #007377; }
+        .option-label input { width: 22px; height: 22px; margin-right: 12px; accent-color: #007377; }
         .floating-actions { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 12px; display: flex; gap: 8px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; }
         .btn { flex: 1; padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; }
         .btn-line { background-color: #06C755; }
@@ -30,7 +31,7 @@
     <form id="mainForm">
         <div class="header-card">
             <h1>🛠️ 技師維修回報系統</h1>
-            <p>填寫完畢後，資料將自動存入雲端試算表。</p>
+            <p>填寫完畢後，點擊「上傳雲端」即可永久存入 Google 試算表。</p>
         </div>
 
         <div class="question-card" style="border-left-color: #ff9800;">
@@ -42,29 +43,94 @@
         </div>
 
         <div id="section-weipin" class="hidden-section" data-brand="惟品">
-            <div class="question-card"><div class="question-title">1. 詳細機器形式 <span class="required">*</span></div><input type="text" data-label="機器形式" name="wp_1"></div>
+            <div class="question-card">
+                <div class="question-title">1. 機器形式 <span class="required">*</span></div>
+                <div class="option-group">
+                    <select name="wp_service" data-label="服務項目" required style="width: 100%; padding: 10px; font-size: 16px;">
+                        <option value="" disabled selected>請選擇服務項目...</option>
+                        <option value="WD1">WD1</option>
+                        <option value="WD2-C1">WD2-C1</option>
+                        <option value="WS1">WS1</option>
+                        <option value="WS2-C1">WS2-C1</option>
+                        <option value="WS2-H1">WS2-H1</option>
+                        <option value="WS2-H1F">WS2-H1F</option>
+                        <option value="WS2-H2">WS2-H2</option>
+                        <option value="WS2-H2F">WS2-H2F</option>
+                        <option value="WC2-C2">WC2-C2</option>
+                    </select>
+                </div>
+            </div>
+                
+                
+            <div class="question-card">
+
             <div class="question-card"><div class="question-title">2. 執行時間 <span class="required">*</span></div><input type="date" data-label="執行時間" name="wp_2"></div>
-            <div class="question-card"><div class="question-title">3. 服務項目</div><input type="text" data-label="服務項目" name="wp_3"></div>
-            <div class="question-card"><div class="question-title">4. 客戶代號 <span class="required">*</span></div><input type="text" data-label="客戶代號" name="wp_4"></div>
-            <div class="question-card"><div class="question-title">5. 韌體版本</div><input type="text" data-label="韌體版本" name="wp_5"></div>
+            
+            <div class="question-card">
+                <div class="question-title">3. 服務項目 <span class="required">*</span></div>
+                <div class="option-group">
+                    <select name="wp_service" data-label="服務項目" required style="width: 100%; padding: 10px; font-size: 16px;">
+                        <option value="" disabled selected>請選擇服務項目...</option>
+                        <option value="裝機">裝機</option>
+                        <option value="合約">合約</option>
+                        <option value="售服">售服</option>
+                        <option value="維修">維修</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="question-card"><div class="question-title">3. 客戶代號 <span class="required">*</span></div><input type="text" data-label="客戶代號" name="wp_3"></div>
+            <div class="question-card"><div class="question-title">4. 韌體版本</div><input type="text" data-label="韌體版本" name="wp_4"></div>
+            <div class="question-card"><div class="question-title">5. 面板版本</div><input type="text" data-label="面板版本" name="wp_5"></div>
+            <div class="question-card"><div class="question-title">6. 龍頭版本</div><input type="text" data-label="龍頭版本" name="wp_6"></div>
+            <div class="question-card"><div class="question-title">7. 原水TDS</div><input type="text" data-label="原水TDS" name="wp_7"></div>
+            <div class="question-card"><div class="question-title">8. 原水水壓</div><input type="text" data-label="原水水壓" name="wp_8"></div>
+            <div class="question-card"><div class="question-title">9. 環境溫度</div><input type="text" data-label="環境溫度" name="wp_9"></div>
+            <div class="question-card"><div class="question-title">10. 100°C水溫度測試</div><input type="text" data-label="100°C水溫" name="wp_10"></div>
+            <div class="question-card"><div class="question-title">11. 35°C水溫度測試</div><input type="text" data-label="35°C水溫" name="wp_11"></div>
+            <div class="question-card"><div class="question-title">12. 10°C水溫度測試</div><input type="text" data-label="10°C水溫" name="wp_12"></div>
+            <div class="question-card"><div class="question-title">13. 100°C水量測試</div><input type="text" data-label="100°C水量" name="wp_13"></div>
+            <div class="question-card"><div class="question-title">14. 35°C水量測試</div><input type="text" data-label="35°C水量" name="wp_14"></div>
+            <div class="question-card"><div class="question-title">15. 10°C水量測試</div><input type="text" data-label="10°C水量" name="wp_15"></div>
+            <div class="question-card"><div class="question-title">16. 場地電壓</div><input type="text" data-label="場地電壓" name="wp_16"></div>
+            <div class="question-card"><div class="question-title">17. 功率調整</div><input type="text" data-label="功率調整" name="wp_17"></div>
+            <div class="question-card"><div class="question-title">18. 最大功率</div><input type="text" data-label="最大功率" name="wp_18"></div>
+            <div class="question-card"><div class="question-title">19. 面板喚醒</div><input type="text" data-label="面板喚醒" name="wp_19"></div>
+            <div class="question-card"><div class="question-title">20. 面板休眠</div><input type="text" data-label="面板休眠" name="wp_20"></div>
+            <div class="question-card"><div class="question-title">21. 面板充電</div><input type="text" data-label="面板充電" name="wp_21"></div>
+            <div class="question-card"><div class="question-title">22. 原水水量</div><input type="text" data-label="原水水量" name="wp_22"></div>
+            <div class="question-card"><div class="question-title">23. 原水溫(0)</div><input type="text" data-label="原水溫0" name="wp_23"></div>
+            <div class="question-card"><div class="question-title">24. 原水溫(1)</div><input type="text" data-label="原水溫1" name="wp_24"></div>
+            <div class="question-card"><div class="question-title">25. 原水溫(2)</div><input type="text" data-label="原水溫2" name="wp_25"></div>
+            <div class="question-card"><div class="question-title">26. 原水溫(3)</div><input type="text" data-label="原水溫3" name="wp_26"></div>
+            <div class="question-card"><div class="question-title">27. 廢水水量</div><input type="text" data-label="廢水水量" name="wp_27"></div>
+            <div class="question-card"><div class="question-title">28. 原理說明</div><input type="text" data-label="原理說明" name="wp_28"></div>
+            <div class="question-card"><div class="question-title">29. 技師口感 <span class="required">*</span></div><input type="text" data-label="技師口感" name="wp_29"></div>
             <div class="question-card"><div class="question-title">30. 客戶口感 <span class="required">*</span></div><input type="text" data-label="客戶口感" name="wp_30"></div>
+            <div class="question-card"><div class="question-title">31. 校正方式</div><input type="text" data-label="校正方式" name="wp_31"></div>
+            <div class="question-card"><div class="question-title">32. 電池款式</div><input type="text" data-label="電池款式" name="wp_32"></div>
+            <div class="question-card"><div class="question-title">33. App 綁定</div><input type="text" data-label="App綁定" name="wp_33"></div>
             <div class="question-card">
                 <div class="question-title">34. 檢修結果 <span class="required">*</span></div>
                 <div class="option-group">
-                    <label class="option-label"><input type="radio" name="wp_34" value="完修" data-label="檢修結果"> 完修</label>
-                    <label class="option-label"><input type="radio" name="wp_34" value="店修" data-label="檢修結果"> 店修</label>
-                    <label class="option-label"><input type="radio" name="wp_34" value="廠修" data-label="檢修結果"> 廠修</label>
+                    <label class="option-label"><input type="radio" name="wp_res" value="完修" data-label="檢修結果"> 完修</label>
+                    <label class="option-label"><input type="radio" name="wp_res" value="店修" data-label="檢修結果"> 店修</label>
+                    <label class="option-label"><input type="radio" name="wp_res" value="廠修" data-label="檢修結果"> 廠修</label>
                 </div>
             </div>
         </div>
 
         <div id="section-chanson" class="hidden-section" data-brand="千山">
-            <div class="question-card"><div class="question-title">1. 單號</div><input type="text" data-label="單號" name="cs_1"></div>
-            <div class="question-card"><div class="question-title">2. 客代 <span class="required">*</span></div><input type="text" data-label="客代" name="cs_2"></div>
+            <div class="question-card"><div class="question-title">1. 單號</div><input type="text" data-label="單號" name="cs_1" placeholder="若無可不填"></div>
+            <div class="question-card"><div class="question-title">2. 客代 <span class="required">*</span></div><input type="text" data-label="客代" name="cs_2" placeholder="例如：A18000505"></div>
             <div class="question-card"><div class="question-title">3. 姓名 <span class="required">*</span></div><input type="text" data-label="姓名" name="cs_3"></div>
-            <div class="question-card"><div class="question-title">6. 報修原因</div><textarea data-label="報修原因" name="cs_6"></textarea></div>
-            <div class="question-card"><div class="question-title">8. 處理方式</div><textarea data-label="處理方式" name="cs_8"></textarea></div>
+            <div class="question-card"><div class="question-title">4. 機型</div><input type="text" data-label="機型" name="cs_4" placeholder="例如：RF900"></div>
+            <div class="question-card"><div class="question-title">5. 機器序號</div><input type="text" data-label="機器序號" name="cs_5"></div>
+            <div class="question-card"><div class="question-title">6. 報修原因</div><textarea data-label="報修原因" name="cs_6" rows="2"></textarea></div>
+            <div class="question-card"><div class="question-title">7. 實際原因</div><textarea data-label="實際原因" name="cs_7" rows="2"></textarea></div>
+            <div class="question-card"><div class="question-title">8. 處理方式</div><textarea data-label="處理方式" name="cs_8" rows="2"></textarea></div>
             <div class="question-card"><div class="question-title">9. 檢測結果</div><input type="text" data-label="檢測結果" name="cs_9" value="更換後正常"></div>
+            <div class="question-card"><div class="question-title">10. 備註</div><textarea data-label="備註" name="cs_10" rows="2"></textarea></div>
         </div>
     </form>
 </div>
@@ -75,14 +141,14 @@
 </div>
 
 <script>
-    // 已填入您的網頁應用程式網址
+    // 您的 Google Apps Script 網址
     const CLOUD_URL = 'https://script.google.com/macros/s/AKfycbyDPLq10PBGi0T89lb5KY_fMGxBkjCQUYAYlXYKitXjnh7Ihg6I6G9oyLFHMXAq_3JO/exec';
 
     function switchBrand(type) {
         document.getElementById('section-weipin').style.display = (type === 'weipin') ? 'block' : 'none';
         document.getElementById('section-chanson').style.display = (type === 'chanson') ? 'block' : 'none';
         
-        // 切換時先禁用所有欄位再開啟選中的，避免抓錯資料
+        // 禁用沒選中的欄位，避免上傳空資料
         document.querySelectorAll('.hidden-section input, .hidden-section textarea, .hidden-section select').forEach(el => el.disabled = true);
         document.getElementById('section-' + type).querySelectorAll('input, textarea, select').forEach(el => el.disabled = false);
     }
@@ -92,10 +158,10 @@
         if (!activeSec) return null;
         
         let items = [];
-        let clientID = "無ID";
+        let clientID = "未知客戶";
         
-        // 抓取文字輸入與下拉選單
-        activeSec.querySelectorAll('input[type="text"], input[type="date"], textarea, select').forEach(el => {
+        // 抓取文字、日期、文字區域
+        activeSec.querySelectorAll('input[type="text"], input[type="date"], textarea').forEach(el => {
             if (el.disabled) return;
             const label = el.getAttribute('data-label');
             const val = el.value || "未填";
@@ -103,17 +169,17 @@
             if (label.includes("代")) clientID = val;
         });
 
-        // 抓取單選鈕 (Radio)
+        // 抓取已選取的單選按鈕
         activeSec.querySelectorAll('input[type="radio"]:checked').forEach(el => {
-            if (el.name === "brand_select") return; // 跳過品牌選擇
+            if (el.name === "brand_select") return; 
             items.push(`${el.getAttribute('data-label')}: ${el.value}`);
         });
 
         return { 
             brand: activeSec.getAttribute('data-brand'), 
             content: items.join('\n'), 
-            clientID: clientID,
-            headerLine: "維修回報"
+            clientID: clientID.trim(),
+            headerLine: "維修作業回報"
         };
     }
 
@@ -125,7 +191,6 @@
         btn.disabled = true; btn.innerText = "上傳中...";
 
         try {
-            // 使用 Fetch POST 資料到 GAS
             await fetch(CLOUD_URL, {
                 method: 'POST',
                 mode: 'no-cors',
@@ -134,7 +199,7 @@
             });
             alert("✅ 上傳指令已發出！\n請檢查 Google 試算表。");
         } catch (e) {
-            alert("❌ 網路連線錯誤，請稍後再試。");
+            alert("❌ 發生網路錯誤，請稍後再試。");
         } finally {
             btn.disabled = false; btn.innerText = "上傳雲端";
         }
@@ -143,22 +208,21 @@
     function copyForLine() {
         const data = getFormData();
         if (data) {
-            const fullNums = ["", "１", "２", "３", "４", "５", "６", "７", "８", "９", "１０", "１１", "１２", "１３", "１４", "１５", "１６", "１７", "１８", "１９", "２０", "２１", "２２", "２３", "２４", "２５", "２６", "２７", "２８", "２９", "３０", "３１", "３２", "３３", "３４"];
+            // 全形數字編號
+            const fullNums = ["", "１", "２", "３", "４", "５", "６", "７", "８", "９", "１０", "１１", "１２", "１３", "１４", "１５", "１６", "１７", "１８", "１９", "２０", "２１", "２２", "２３", "２４", "２５", "２６", "２７", "２８", "２９", "３０", "３１", "３２", "３３", "３４", "３５"];
             let lines = data.content.split('\n');
-            let formatted = `【${data.brand} 維修回報】\n`;
+            let formatted = `【${data.brand}】\n`;
             lines.forEach((l, i) => {
                 formatted += `${fullNums[i+1] || i+1}．${l}\n`;
             });
             
-            // 複製到剪貼簿
-            const tempEl = document.createElement('textarea');
-            tempEl.value = formatted;
-            document.body.appendChild(tempEl);
-            tempEl.select();
+            const temp = document.createElement('textarea');
+            temp.value = formatted;
+            document.body.appendChild(temp);
+            temp.select();
             document.execCommand('copy');
-            document.body.removeChild(tempEl);
-            
-            alert("✅ 已複製 LINE 格式文字");
+            document.body.removeChild(temp);
+            alert("✅ 已複製 LINE 格式內容");
         }
     }
 </script>
