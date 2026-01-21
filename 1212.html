@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>維修回報系統 - GitHub 上傳修正版</title>
+    <title>維修回報系統 - GitHub 上傳更新版</title>
     <style>
         body { background-color: #efeff4; font-family: -apple-system, sans-serif; margin: 0; padding: 20px 0 100px 0; display: flex; justify-content: center; }
         .form-container { width: 100%; max-width: 600px; margin: 0 12px; }
-        .header-card { background: linear-gradient(135deg, #007377 0%, #005a5e 100%); color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .header-card { background: linear-gradient(135deg, #007377 0%, #005a5e 100%); color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .question-card { background-color: #fff; padding: 20px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-left: 4px solid transparent; }
         .question-card:focus-within { border-left-color: #007377; }
         .question-title { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
         .required { color: #ff3b30; }
         .hidden-section { display: none; }
-        input[type="text"], input[type="date"], textarea { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        input[type="text"], input[type="date"], textarea, select { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; background-color: #fafafa; }
         .option-group { display: flex; flex-direction: column; gap: 10px; }
         .option-label { display: flex; align-items: center; padding: 8px 0; cursor: pointer; }
         .option-label input { width: 20px; height: 20px; margin-right: 12px; accent-color: #007377; }
-        .floating-actions { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 12px; display: flex; gap: 8px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; color: white; cursor: pointer; }
+        .floating-actions { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 12px; display: flex; gap: 8px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; color: white; cursor: pointer; text-align: center; }
         .btn-line { background-color: #06C755; }
         .btn-github { background-color: #24292e; }
         .btn:disabled { background-color: #ccc; }
@@ -30,7 +30,7 @@
     <form id="mainForm">
         <div class="header-card">
             <h1>🛠️ 技師維修回報系統</h1>
-            <p>修正 GitHub 401 錯誤版本。上傳後請至 GitHub 查看 data 資料夾。</p>
+            <p>已更新 Token，填寫後點擊上傳即可存入 GitHub data 資料夾。</p>
         </div>
 
         <div class="question-card">
@@ -42,14 +42,20 @@
         </div>
 
         <div id="section-weipin" class="hidden-section" data-brand="惟品">
-            <div class="question-card"><div class="question-title">1. 詳細型號 <span class="required">*</span></div><input type="text" data-label="型號" name="wp_1"></div>
-            <div class="question-card"><div class="question-title">2. 客戶代號 <span class="required">*</span></div><input type="text" data-label="客戶代號" name="wp_4"></div>
+            <div class="question-card"><div class="question-title">1. 詳細型號/形式 <span class="required">*</span></div><input type="text" data-label="型號" name="wp_1"></div>
+            <div class="question-card"><div class="question-title">2. 執行時間 <span class="required">*</span></div><input type="date" data-label="時間" name="wp_2"></div>
+            <div class="question-card"><div class="question-title">4. 客戶代號 <span class="required">*</span></div><input type="text" data-label="客代" name="wp_4"></div>
+            <div class="question-card"><div class="question-title">30. 技師口感</div><input type="text" data-label="技師口感" name="wp_30"></div>
+            <div class="question-card"><div class="question-title">34. 檢修結果</div><input type="text" data-label="檢修結果" name="wp_34"></div>
         </div>
 
         <div id="section-chanson" class="hidden-section" data-brand="千山">
             <div class="question-card"><div class="question-title">1. 單號</div><input type="text" data-label="單號" name="cs_1"></div>
             <div class="question-card"><div class="question-title">2. 客代 <span class="required">*</span></div><input type="text" data-label="客代" name="cs_2"></div>
             <div class="question-card"><div class="question-title">3. 姓名 <span class="required">*</span></div><input type="text" data-label="姓名" name="cs_3"></div>
+            <div class="question-card"><div class="question-title">6. 報修原因</div><textarea data-label="報修原因" name="cs_6"></textarea></div>
+            <div class="question-card"><div class="question-title">8. 處理方式</div><textarea data-label="處理方式" name="cs_8"></textarea></div>
+            <div class="question-card"><div class="question-title">9. 檢測結果</div><input type="text" data-label="檢測結果" name="cs_9" value="更換後正常"></div>
         </div>
     </form>
 </div>
@@ -60,10 +66,10 @@
 </div>
 
 <script>
-    // GitHub 設定區
+    // GitHub 配置更新
     const GITHUB_CONFIG = {
-        token: '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',
-        username: 'gn045001', 
+        token: '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',
+        username: 'gn045001',
         repo: 'ChansonWater',
         folder: 'data'
     };
@@ -91,58 +97,41 @@
 
     async function uploadToGitHub() {
         const data = getFormData();
-        if (!data) return alert("請先填寫資料");
-        
+        if (!data) return alert("請先選擇品牌並填寫資料");
         const btn = document.getElementById('btn-upload');
-        btn.disabled = true; 
-        btn.innerText = "正在連線...";
+        btn.disabled = true; btn.innerText = "連線中...";
 
-        // 檔名加入時間戳記防止重複
-        const timestamp = new Date().getTime();
-        const dateStr = new Date().toISOString().slice(0,10);
-        const fileName = `${dateStr}_${data.brand}_${data.clientID}_${timestamp}.txt`;
+        const fileName = `${new Date().toISOString().slice(0,10)}_${data.brand}_${data.clientID}_${Date.now()}.txt`;
         const path = `${GITHUB_CONFIG.folder}/${fileName}`;
-        
-        // 修正編碼問題
         const contentBase64 = btoa(unescape(encodeURIComponent(data.content)));
 
         try {
-            // 修正 URL 中的 api.api.github.com -> api.github.com
             const resp = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.username}/${GITHUB_CONFIG.repo}/contents/${path}`, {
                 method: 'PUT',
                 headers: { 
-                    'Authorization': `Bearer ${GITHUB_CONFIG.token}`, // 建議使用 Bearer
+                    'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
                     'Content-Type': 'application/json',
                     'Accept': 'application/vnd.github.v3+json'
                 },
-                body: JSON.stringify({ 
-                    message: `維修單上傳: ${fileName}`, 
-                    content: contentBase64 
-                })
+                body: JSON.stringify({ message: `維修單: ${fileName}`, content: contentBase64 })
             });
 
             if (resp.status === 401) {
-                alert("❌ 401 錯誤：Token 無效或過期。請確認 Token 權限是否勾選了 'repo'。");
+                alert("代碼:401\n原因:Bad credentials\n請檢查 Token 是否正確或已過期。");
             } else if (resp.ok) {
-                alert("✅ 上傳成功！檔案已存至 GitHub data 資料夾。");
+                alert("✅ 上傳成功！已存入 data 資料夾。");
             } else {
                 const err = await resp.json();
-                alert("❌ 上傳失敗：" + (err.message || "未知原因"));
+                alert("❌ 上傳失敗: " + (err.message || resp.status));
             }
-        } catch (e) { 
-            alert("❌ 網路連線錯誤"); 
-            console.error(e);
-        } finally {
-            btn.disabled = false; 
-            btn.innerText = "上傳 GitHub";
-        }
+        } catch (e) { alert("❌ 網路連線錯誤"); }
+        btn.disabled = false; btn.innerText = "上傳 GitHub";
     }
 
     function copyForLine() {
         const data = getFormData();
         if (data) {
-            const text = `${data.brand} 維修回報\n${data.content}`;
-            navigator.clipboard.writeText(text);
+            navigator.clipboard.writeText(`${data.brand} 維修回報\n${data.content}`);
             alert("✅ 已複製到剪貼簿");
         }
     }
