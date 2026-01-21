@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>維修回報系統 - GitHub 上傳更新版</title>
+    <title>技師維修回報系統 - 雲端版</title>
     <style>
-        body { background-color: #efeff4; font-family: -apple-system, sans-serif; margin: 0; padding: 20px 0 100px 0; display: flex; justify-content: center; }
-        .form-container { width: 100%; max-width: 600px; margin: 0 12px; }
-        .header-card { background: linear-gradient(135deg, #007377 0%, #005a5e 100%); color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .question-card { background-color: #fff; padding: 20px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-left: 4px solid transparent; }
+        body { background-color: #efeff4; font-family: -apple-system, "Microsoft JhengHei", sans-serif; margin: 0; padding: 20px 0 100px 0; display: flex; justify-content: center; }
+        .form-container { width: 100%; max-width: 640px; margin: 0 12px; }
+        .header-card { background: linear-gradient(135deg, #007377 0%, #005a5e 100%); color: white; padding: 24px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-top: 10px solid #004d40; }
+        .question-card { background-color: #fff; padding: 20px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid transparent; }
         .question-card:focus-within { border-left-color: #007377; }
-        .question-title { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
-        .required { color: #ff3b30; }
+        .question-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: #242424; }
+        .required { color: #d93025; margin-left: 4px; }
         .hidden-section { display: none; }
-        input[type="text"], input[type="date"], textarea, select { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; background-color: #fafafa; }
-        .option-group { display: flex; flex-direction: column; gap: 10px; }
-        .option-label { display: flex; align-items: center; padding: 8px 0; cursor: pointer; }
+        input[type="text"], input[type="date"], textarea, select { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #dadce0; border-radius: 4px; box-sizing: border-box; background-color: #fff; }
+        .option-group { display: flex; flex-direction: column; gap: 12px; }
+        .option-label { display: flex; align-items: center; cursor: pointer; padding: 5px 0; }
         .option-label input { width: 20px; height: 20px; margin-right: 12px; accent-color: #007377; }
         .floating-actions { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 12px; display: flex; gap: 8px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; }
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; color: white; cursor: pointer; text-align: center; }
+        .btn { flex: 1; padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; }
         .btn-line { background-color: #06C755; }
-        .btn-github { background-color: #24292e; }
+        .btn-cloud { background-color: #4285F4; }
         .btn:disabled { background-color: #ccc; }
     </style>
 </head>
@@ -30,11 +30,11 @@
     <form id="mainForm">
         <div class="header-card">
             <h1>🛠️ 技師維修回報系統</h1>
-            <p>已更新 Token，填寫後點擊上傳即可存入 GitHub data 資料夾。</p>
+            <p>填寫完畢後，資料將自動存入雲端試算表。</p>
         </div>
 
-        <div class="question-card">
-            <div class="question-title">請選擇機器品牌 <span class="required">*</span></div>
+        <div class="question-card" style="border-left-color: #ff9800;">
+            <div class="question-title">請選擇維修品牌 <span class="required">*</span></div>
             <div class="option-group">
                 <label class="option-label"><input type="radio" name="brand_select" value="惟品" onclick="switchBrand('weipin')" required> 惟品 (WS2 系列)</label>
                 <label class="option-label"><input type="radio" name="brand_select" value="千山" onclick="switchBrand('chanson')"> 千山 (淨水系列)</label>
@@ -42,11 +42,20 @@
         </div>
 
         <div id="section-weipin" class="hidden-section" data-brand="惟品">
-            <div class="question-card"><div class="question-title">1. 詳細型號/形式 <span class="required">*</span></div><input type="text" data-label="型號" name="wp_1"></div>
-            <div class="question-card"><div class="question-title">2. 執行時間 <span class="required">*</span></div><input type="date" data-label="時間" name="wp_2"></div>
-            <div class="question-card"><div class="question-title">4. 客戶代號 <span class="required">*</span></div><input type="text" data-label="客代" name="wp_4"></div>
-            <div class="question-card"><div class="question-title">30. 技師口感</div><input type="text" data-label="技師口感" name="wp_30"></div>
-            <div class="question-card"><div class="question-title">34. 檢修結果</div><input type="text" data-label="檢修結果" name="wp_34"></div>
+            <div class="question-card"><div class="question-title">1. 詳細機器形式 <span class="required">*</span></div><input type="text" data-label="機器形式" name="wp_1"></div>
+            <div class="question-card"><div class="question-title">2. 執行時間 <span class="required">*</span></div><input type="date" data-label="執行時間" name="wp_2"></div>
+            <div class="question-card"><div class="question-title">3. 服務項目</div><input type="text" data-label="服務項目" name="wp_3"></div>
+            <div class="question-card"><div class="question-title">4. 客戶代號 <span class="required">*</span></div><input type="text" data-label="客戶代號" name="wp_4"></div>
+            <div class="question-card"><div class="question-title">5. 韌體版本</div><input type="text" data-label="韌體版本" name="wp_5"></div>
+            <div class="question-card"><div class="question-title">30. 客戶口感 <span class="required">*</span></div><input type="text" data-label="客戶口感" name="wp_30"></div>
+            <div class="question-card">
+                <div class="question-title">34. 檢修結果 <span class="required">*</span></div>
+                <div class="option-group">
+                    <label class="option-label"><input type="radio" name="wp_34" value="完修" data-label="檢修結果"> 完修</label>
+                    <label class="option-label"><input type="radio" name="wp_34" value="店修" data-label="檢修結果"> 店修</label>
+                    <label class="option-label"><input type="radio" name="wp_34" value="廠修" data-label="檢修結果"> 廠修</label>
+                </div>
+            </div>
         </div>
 
         <div id="section-chanson" class="hidden-section" data-brand="千山">
@@ -62,77 +71,94 @@
 
 <div class="floating-actions">
     <button class="btn btn-line" onclick="copyForLine()">複製 LINE</button>
-    <button class="btn btn-github" id="btn-upload" onclick="uploadToGitHub()">上傳 GitHub</button>
+    <button class="btn btn-cloud" id="btn-upload" onclick="uploadToCloud()">上傳雲端</button>
 </div>
 
 <script>
-    // GitHub 配置更新
-    const GITHUB_CONFIG = {
-        token: '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',
-        username: 'gn045001',
-        repo: 'ChansonWater',
-        folder: 'data'
-    };
+    // 已填入您的網頁應用程式網址
+    const CLOUD_URL = 'https://script.google.com/macros/s/AKfycbyDPLq10PBGi0T89lb5KY_fMGxBkjCQUYAYlXYKitXjnh7Ihg6I6G9oyLFHMXAq_3JO/exec';
 
     function switchBrand(type) {
         document.getElementById('section-weipin').style.display = (type === 'weipin') ? 'block' : 'none';
         document.getElementById('section-chanson').style.display = (type === 'chanson') ? 'block' : 'none';
-        document.querySelectorAll('.hidden-section input, .hidden-section textarea').forEach(el => el.disabled = true);
-        document.getElementById('section-' + type).querySelectorAll('input, textarea').forEach(el => el.disabled = false);
+        
+        // 切換時先禁用所有欄位再開啟選中的，避免抓錯資料
+        document.querySelectorAll('.hidden-section input, .hidden-section textarea, .hidden-section select').forEach(el => el.disabled = true);
+        document.getElementById('section-' + type).querySelectorAll('input, textarea, select').forEach(el => el.disabled = false);
     }
 
     function getFormData() {
         const activeSec = document.querySelector('.hidden-section[style*="block"]');
         if (!activeSec) return null;
+        
         let items = [];
-        let clientID = "Unknown";
-        activeSec.querySelectorAll('[data-label]').forEach(el => {
-            if (el.value) {
-                items.push(`${el.getAttribute('data-label')}: ${el.value}`);
-                if (el.getAttribute('data-label').includes("代")) clientID = el.value;
-            }
+        let clientID = "無ID";
+        
+        // 抓取文字輸入與下拉選單
+        activeSec.querySelectorAll('input[type="text"], input[type="date"], textarea, select').forEach(el => {
+            if (el.disabled) return;
+            const label = el.getAttribute('data-label');
+            const val = el.value || "未填";
+            items.push(`${label}: ${val}`);
+            if (label.includes("代")) clientID = val;
         });
-        return { brand: activeSec.getAttribute('data-brand'), content: items.join('\n'), clientID };
+
+        // 抓取單選鈕 (Radio)
+        activeSec.querySelectorAll('input[type="radio"]:checked').forEach(el => {
+            if (el.name === "brand_select") return; // 跳過品牌選擇
+            items.push(`${el.getAttribute('data-label')}: ${el.value}`);
+        });
+
+        return { 
+            brand: activeSec.getAttribute('data-brand'), 
+            content: items.join('\n'), 
+            clientID: clientID,
+            headerLine: "維修回報"
+        };
     }
 
-    async function uploadToGitHub() {
+    async function uploadToCloud() {
         const data = getFormData();
-        if (!data) return alert("請先選擇品牌並填寫資料");
+        if (!data) return alert("請先填寫資料");
+        
         const btn = document.getElementById('btn-upload');
-        btn.disabled = true; btn.innerText = "連線中...";
-
-        const fileName = `${new Date().toISOString().slice(0,10)}_${data.brand}_${data.clientID}_${Date.now()}.txt`;
-        const path = `${GITHUB_CONFIG.folder}/${fileName}`;
-        const contentBase64 = btoa(unescape(encodeURIComponent(data.content)));
+        btn.disabled = true; btn.innerText = "上傳中...";
 
         try {
-            const resp = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.username}/${GITHUB_CONFIG.repo}/contents/${path}`, {
-                method: 'PUT',
-                headers: { 
-                    'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/vnd.github.v3+json'
-                },
-                body: JSON.stringify({ message: `維修單: ${fileName}`, content: contentBase64 })
+            // 使用 Fetch POST 資料到 GAS
+            await fetch(CLOUD_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
             });
-
-            if (resp.status === 401) {
-                alert("代碼:401\n原因:Bad credentials\n請檢查 Token 是否正確或已過期。");
-            } else if (resp.ok) {
-                alert("✅ 上傳成功！已存入 data 資料夾。");
-            } else {
-                const err = await resp.json();
-                alert("❌ 上傳失敗: " + (err.message || resp.status));
-            }
-        } catch (e) { alert("❌ 網路連線錯誤"); }
-        btn.disabled = false; btn.innerText = "上傳 GitHub";
+            alert("✅ 上傳指令已發出！\n請檢查 Google 試算表。");
+        } catch (e) {
+            alert("❌ 網路連線錯誤，請稍後再試。");
+        } finally {
+            btn.disabled = false; btn.innerText = "上傳雲端";
+        }
     }
 
     function copyForLine() {
         const data = getFormData();
         if (data) {
-            navigator.clipboard.writeText(`${data.brand} 維修回報\n${data.content}`);
-            alert("✅ 已複製到剪貼簿");
+            const fullNums = ["", "１", "２", "３", "４", "５", "６", "７", "８", "９", "１０", "１１", "１２", "１３", "１４", "１５", "１６", "１７", "１８", "１９", "２０", "２１", "２２", "２３", "２４", "２５", "２６", "２７", "２８", "２９", "３０", "３１", "３２", "３３", "３４"];
+            let lines = data.content.split('\n');
+            let formatted = `【${data.brand} 維修回報】\n`;
+            lines.forEach((l, i) => {
+                formatted += `${fullNums[i+1] || i+1}．${l}\n`;
+            });
+            
+            // 複製到剪貼簿
+            const tempEl = document.createElement('textarea');
+            tempEl.value = formatted;
+            document.body.appendChild(tempEl);
+            tempEl.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempEl);
+            
+            alert("✅ 已複製 LINE 格式文字");
         }
     }
 </script>
